@@ -1,0 +1,91 @@
+-- 1. ดึง UI Library (Fluent UI) เข้ามาใช้งาน
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+
+-- 2. สร้างหน้าต่างหลักของเมนู (Window)
+local Window = Fluent:CreateWindow({
+    Title = "My First Delta Script",
+    SubTitle = "by Developer",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true, -- เอฟเฟกต์เบลอพื้นหลัง
+    Theme = "Dark"
+})
+
+-- 3. สร้าง Tab เมนู
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "user" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+}
+
+-- ========================================================
+-- ตัวอย่างฟังก์ชันที่ 1: ปรับความเร็วการเดิน (WalkSpeed)
+-- ========================================================
+local SpeedSlider = Tabs.Main:AddSlider("WalkSpeed", {
+    Title = "Player Speed",
+    Description = "ปรับความเร็วการเคลื่อนที่",
+    Default = 16,
+    Min = 16,
+    Max = 200,
+    Rounding = 0,
+    Callback = function(Value)
+        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        end
+    end
+})
+
+-- ========================================================
+-- ตัวอย่างฟังก์ชันที่ 2: ปรับความสูงการกระโดด (JumpPower)
+-- ========================================================
+local JumpSlider = Tabs.Main:AddSlider("JumpPower", {
+    Title = "Jump Power",
+    Description = "ปรับความสูงในการกระโดด",
+    Default = 50,
+    Min = 50,
+    Max = 300,
+    Rounding = 0,
+    Callback = function(Value)
+        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+            game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+        end
+    end
+})
+
+-- ========================================================
+-- ตัวอย่างฟังก์ชันที่ 3: สวิตช์ เปิด/ปิด มองทะลุผู้เล่น (Highlight ESP)
+-- ========================================================
+local ESPToggle = Tabs.Main:AddToggle("PlayerESP", {
+    Title = "Player ESP (มองทะลุ)",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            -- เปิด ESP
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player ~= game.Players.LocalPlayer and player.Character then
+                    if not player.Character:FindFirstChild("ESPHighlight") then
+                        local highlight = Instance.new("Highlight")
+                        highlight.Name = "ESPHighlight"
+                        highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+                        highlight.Parent = player.Character
+                    end
+                end
+            end
+        else
+            -- ปิด ESP
+            for _, player in pairs(game.Players:GetPlayers()) do
+                if player.Character and player.Character:FindFirstChild("ESPHighlight") then
+                    player.Character.ESPHighlight:Destroy()
+                end
+            end
+        end
+    end
+})
+
+-- แจ้งเตือนเมื่อสคริปต์ทำงานสำเร็จ
+Fluent:Notify({
+    Title = "Delta Script Loaded!",
+    Content = "สคริปต์ทำงานเรียบร้อยแล้ว",
+    Duration = 5
+})
